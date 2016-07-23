@@ -15,6 +15,7 @@ image: WMF 5
 init:
   - ps: Install-PackageProvider -Name Nuget -RequiredVersion 2.8.5.201 -Force | Out-Null
   - ps: Install-Module -Name Pester -RequiredVersion 3.4.1 -Force
+  - ps: Get-ChildItem env: | select Name
 
 # Set the healthcheck and nuget API key variables
 environment:
@@ -29,6 +30,7 @@ build: off
 # Run test and upload results
 test_script:
 - ps: >-
+    $global:key = $env:secureApi;
     $testResultsFile = ".\TestsResults.xml";
     $res = Invoke-Pester -Script .\Tests\PS.HealthChecks.Tests.ps1 -OutputFormat NUnitXml -OutputFile $testResultsFile -PassThru;
     (New-Object 'System.Net.WebClient').UploadFile("https://ci.appveyor.com/api/testresults/nunit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path $testResultsFile));

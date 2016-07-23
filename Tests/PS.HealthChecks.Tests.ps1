@@ -2,20 +2,17 @@
 Remove-Module 'PS.HealthChecks' -ErrorAction Ignore
 Import-Module "$WorkspaceRoot\PS.HealthChecks\PS.HealthChecks.psd1" -Force
 
-if($env:APPVEYOR_PROJECT_ID -eq $null) {
+if($global:key -eq $null) {
     # Using json key.
     $settings = Get-Content $PSScriptRoot\testSettings.json | ConvertFrom-Json
-    $key = $settings.ApiKey
-} else {
-    # Using appveyor key.
-    $key = $Env:secureApi
+    $global:key = $settings.ApiKey
 }
 
 InModuleScope PS.HealthChecks {
     Describe PS.HealthChecks {
         Context "Test Connect cmdlet" {
             It "Does not error" {
-                {Connect-HealthCheck -ApiKey $key} | Should Not Throw
+                {Connect-HealthCheck -ApiKey $global:key} | Should Not Throw
             }
         }
         Context "Test New cmdlets" {
@@ -23,7 +20,7 @@ InModuleScope PS.HealthChecks {
                 {New-HealthCheck -Name 'ci-test1' -Tag 'ci test' -Timeout 86400 -Grace 3600 -Channel ''} | Should Not Throw
             }
             It "Creates Checks with API key" {
-                {New-HealthCheck -Name 'ci-test2' -Tag 'ci test' -Timeout 86400 -Grace 3600 -Channel '' -ApiKey $key} | Should Not Throw
+                {New-HealthCheck -Name 'ci-test2' -Tag 'ci test' -Timeout 86400 -Grace 3600 -Channel '' -ApiKey $global:key} | Should Not Throw
             }
         }
         Context "Test Get cmdlets" {
@@ -41,7 +38,7 @@ InModuleScope PS.HealthChecks {
                 $ciTest.NextPing | Should BeNullOrEmpty
             }
             It "Lists Checks with API key" {
-                $hchk = Get-HealthCheck -ApiKey $key
+                $hchk = Get-HealthCheck -ApiKey $global:key
                 $hchk.Count | Should BeGreaterThan 0
                 $ciTest = $hchk | Where-Object {$_.Name -eq 'ci-test2'}
                 $ciTest.Name | Should BeExactly 'ci-test2'
