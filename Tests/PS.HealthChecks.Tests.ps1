@@ -2,16 +2,13 @@
 Remove-Module 'PS.HealthChecks' -ErrorAction Ignore
 Import-Module "$WorkspaceRoot\PS.HealthChecks\PS.HealthChecks.psd1" -Force
 
-switch ($env:APPVEYOR_PROJECT_ID) {
-    $null {
-        Write-Output 'Using json key.'
-        $settings = Get-Content .\testSettings.json | ConvertFrom-Json
-        $key = $settings.ApiKey
-    }
-    Default {
-        Write-Output 'Using appveyor key.'
-        $key = $Env:secure_api
-    }
+if($env:APPVEYOR_PROJECT_ID -eq $null) {
+    # Using json key.
+    $settings = Get-Content .\testSettings.json | ConvertFrom-Json
+    $key = $settings.ApiKey
+} else {
+    # Using appveyor key.
+    $key = $Env:secure_api
 }
 
 InModuleScope PS.HealthChecks {
