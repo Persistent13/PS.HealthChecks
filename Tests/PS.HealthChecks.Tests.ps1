@@ -20,7 +20,8 @@ InModuleScope PS.HealthChecks {
             It "Creates Checks" {
                 {New-HealthCheck -Name 'ci-test1' -Tag 'ci test' -Timeout 86400 -Grace 3600 -Channel ''} | Should Not Throw
             }
-            It "Lists checks" {
+            It "Lists Checks" {
+                Start-Sleep -Milliseconds 500
                 $hchk = Get-HealthCheck
                 $hchk.Count | Should BeGreaterThan 0
                 $ciTest = $hchk | Where-Object {$_.Name -eq 'ci-test1'}
@@ -38,7 +39,8 @@ InModuleScope PS.HealthChecks {
             It "Creates Checks" {
                 {New-HealthCheck -Name 'ci-test2' -Tag 'ci test' -Timeout 86400 -Grace 3600 -Channel '' -ApiKey $key} | Should Not Throw
             }
-            It "Lists checks" {
+            It "Lists Checks" {
+                Start-Sleep -Milliseconds 500
                 $hchk = Get-HealthCheck -ApiKey $key
                 $hchk.Count | Should BeGreaterThan 0
                 $ciTest = $hchk | Where-Object {$_.Name -eq 'ci-test2'}
