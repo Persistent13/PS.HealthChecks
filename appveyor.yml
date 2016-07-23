@@ -15,7 +15,7 @@ image: WMF 5
 init:
   - ps: Install-PackageProvider -Name Nuget -RequiredVersion 2.8.5.201 -Force | Out-Null
   - ps: Install-Module -Name Pester -RequiredVersion 3.4.1 -Force
-  - ps: Get-ChildItem env: | select Name
+  - ps: $foo = Get-ChildItem env:; $foo.Name
 
 # Set the healthcheck and nuget API key variables
 environment:
