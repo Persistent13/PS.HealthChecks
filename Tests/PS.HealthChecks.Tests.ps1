@@ -4,7 +4,7 @@ Import-Module "$WorkspaceRoot\PS.HealthChecks\PS.HealthChecks.psd1" -Force
 
 if($env:APPVEYOR_PROJECT_ID -eq $null) {
     # Using json key.
-    $settings = Get-Content .\testSettings.json | ConvertFrom-Json
+    $settings = Get-Content $PSScriptRoot\testSettings.json | ConvertFrom-Json
     $key = $settings.ApiKey
 } else {
     # Using appveyor key.
@@ -13,15 +13,21 @@ if($env:APPVEYOR_PROJECT_ID -eq $null) {
 
 InModuleScope PS.HealthChecks {
     Describe PS.HealthChecks {
-        Context "API key parameter not specified" {
-            It "Connects to the HealthCheck API" {
+        Context "Test Connect cmdlet" {
+            It "Does not error" {
                 {Connect-HealthCheck -ApiKey $key} | Should Not Throw
             }
-            It "Creates Checks" {
+        }
+        Context "Test New cmdlets" {
+            It "Creates Checks without API key" {
                 {New-HealthCheck -Name 'ci-test1' -Tag 'ci test' -Timeout 86400 -Grace 3600 -Channel ''} | Should Not Throw
             }
-            It "Lists Checks" {
-                Start-Sleep -Milliseconds 500
+            It "Creates Checks with API key" {
+                {New-HealthCheck -Name 'ci-test2' -Tag 'ci test' -Timeout 86400 -Grace 3600 -Channel '' -ApiKey $key} | Should Not Throw
+            }
+        }
+        Context "Test Get cmdlets" {
+            It "Lists Checks without API key" {
                 $hchk = Get-HealthCheck
                 $hchk.Count | Should BeGreaterThan 0
                 $ciTest = $hchk | Where-Object {$_.Name -eq 'ci-test1'}
@@ -34,13 +40,7 @@ InModuleScope PS.HealthChecks {
                 $ciTest.LastPing | Should BeNullOrEmpty
                 $ciTest.NextPing | Should BeNullOrEmpty
             }
-        }
-        Context "API key parameter specified" {
-            It "Creates Checks" {
-                {New-HealthCheck -Name 'ci-test2' -Tag 'ci test' -Timeout 86400 -Grace 3600 -Channel '' -ApiKey $key} | Should Not Throw
-            }
-            It "Lists Checks" {
-                Start-Sleep -Milliseconds 500
+            It "Lists Checks with API key" {
                 $hchk = Get-HealthCheck -ApiKey $key
                 $hchk.Count | Should BeGreaterThan 0
                 $ciTest = $hchk | Where-Object {$_.Name -eq 'ci-test2'}
