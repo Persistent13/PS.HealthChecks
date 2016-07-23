@@ -18,9 +18,9 @@ init:
 
 # Set the healthcheck and nuget API key variables
 environment:
-  secure_api:
+  secureApi:
     secure: M0ckUYrnDo8J+MD4vHJH48kmP3m2wYvHm5wlYD4thgsbCCvCfOlB26efwIXv1jJA
-  secure_nuget:
+  secureNuget:
     secure: UODT6L1HnLkZSbTCa3iiNl0k4Zld+WOVrq1nbcdX0q8X8BFAiLNdi1OcisvJ05xl
 
 # We don't use msbuild
