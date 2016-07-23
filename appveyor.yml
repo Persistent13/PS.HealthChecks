@@ -44,5 +44,11 @@ test_script:
 # Deploy the module to the PS Gallery
 deploy_script:
 - ps: >-
-    $Env:PSModulePath = $Env:PSModulePath + ";$Env:APPVEYOR_BUILD_FOLDER";
-    Publish-Module -Name 'PS.HealthChecks' -NuGetApiKey $Env:secureNuget
+    $ManifestPath = "$env:APPVEYOR_BUILD_FOLDER\PS.HealthChecks\PS.HealthChecks.psd1";
+    $Manifest = Invoke-Expression -Command (Get-Content $ManifestPath -Raw);
+    $Manifest.ModuleVersion = $env:APPVEYOR_BUILD_VERSION;
+    Remove-Item -Path $ManifestPath -Force;
+    $NewManifest = New-ModuleManifest @Manifest -PassThru;
+    Set-Content -Path $ManifestPath -Value $NewManifest;
+    $env:PSModulePath = $env:PSModulePath + ";$env:APPVEYOR_BUILD_FOLDER";
+    Publish-Module -Name 'PS.HealthChecks' -NuGetApiKey $env:secureNuget
