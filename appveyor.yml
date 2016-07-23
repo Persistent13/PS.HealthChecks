@@ -40,10 +40,11 @@ test_script:
 
 # Deploy the module to the PS Gallery on tag
 deploy_script:
+- branches:
+  only:
+    - master
 - ps: >-
-    if($env:APPVEYOR_REPO_TAG -eq $true) {
-      $ManifestPath = "$env:APPVEYOR_BUILD_FOLDER\PS.HealthChecks\PS.HealthChecks.psd1";
-      Update-ModuleManifest -ModuleVersion $env:APPVEYOR_BUILD_VERSION -Path $ManifestPath;
-      $Env:PSModulePath = $Env:PSModulePath + ";$Env:APPVEYOR_BUILD_FOLDER";
-      Publish-Module -Name 'PS.HealthChecks' -NuGetApiKey $env:secureNuget
-    }
+    $ManifestPath = "$env:APPVEYOR_BUILD_FOLDER\PS.HealthChecks\PS.HealthChecks.psd1";
+    Update-ModuleManifest -ModuleVersion $env:APPVEYOR_BUILD_VERSION -Path $ManifestPath;
+    $Env:PSModulePath = $Env:PSModulePath + ";$Env:APPVEYOR_BUILD_FOLDER";
+    Publish-Module -Name 'PS.HealthChecks' -NuGetApiKey $env:secureNuget
