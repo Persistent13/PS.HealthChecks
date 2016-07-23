@@ -8,7 +8,7 @@ switch ($env:APPVEYOR_PROJECT_ID) {
         $key = $settings.ApiKey
     }
     Default {
-        $key = ${env:secure_api}
+        $key = $Env:secure_api
     }
 }
 
@@ -20,7 +20,6 @@ InModuleScope PS.HealthChecks {
             }
             It "Creates Checks" {
                 {New-HealthCheck -Name 'ci-test1' -Tag 'ci test' -Timeout 86400 -Grace 3600 -Channel ''} | Should Not Throw
-                #Start-Sleep -Seconds 1
             }
             It "Lists checks" {
                 $hchk = Get-HealthCheck
@@ -34,13 +33,11 @@ InModuleScope PS.HealthChecks {
                 $ciTest.PingCount | Should Be 0
                 $ciTest.LastPing | Should BeNullOrEmpty
                 $ciTest.NextPing | Should BeNullOrEmpty
-                #Start-Sleep -Seconds 1
             }
         }
         Context "API key parameter specified" {
             It "Creates Checks" {
                 {New-HealthCheck -Name 'ci-test2' -Tag 'ci test' -Timeout 86400 -Grace 3600 -Channel '' -ApiKey $key} | Should Not Throw
-                #Start-Sleep -Seconds 1
             }
             It "Lists checks" {
                 $hchk = Get-HealthCheck -ApiKey $key
@@ -54,7 +51,6 @@ InModuleScope PS.HealthChecks {
                 $ciTest.PingCount | Should Be 0
                 $ciTest.LastPing | Should BeNullOrEmpty
                 $ciTest.NextPing | Should BeNullOrEmpty
-                #Start-Sleep -Seconds 1
             }
         }
     }
