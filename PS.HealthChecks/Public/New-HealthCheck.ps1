@@ -53,28 +53,25 @@ function New-HealthCheck
         # The name of the new check.
         [Parameter(Mandatory=$false)]
         [ValidateNotNull()]
-        [ValidateNotNullOrEmpty()]
         [ValidateLength(0,30)]
         [String[]]$Name = '',
         # Tag(s) for the check.
         [Parameter(Mandatory=$false)]
         [ValidateNotNull()]
-        [ValidateNotNullOrEmpty()]
         [String]$Tag = '',
         # Timeout period for the check, maximum 604800 seconds (1 week).
         [Parameter(Mandatory=$false)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
-        [String]$Timeout = 86400,
+        [UInt32]$Timeout = 86400,
         # Grace period for the check, maximum 604800 seconds (1 week).
         [Parameter(Mandatory=$false)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
-        [String]$Grace = 3600,
+        [UInt32]$Grace = 3600,
         # Alert channel to send notifications on.
         [Parameter(Mandatory=$false)]
         [ValidateNotNull()]
-        [ValidateNotNullOrEmpty()]
         [String]$Channel = '',
         # Used to bypass confirmation prompts.
         [Parameter(Mandatory=$false)]
@@ -95,7 +92,6 @@ function New-HealthCheck
             throw 'The API key needs to be specified.'
         }
         [Hashtable]$sessionHeaders = @{'X-Api-Key'=$ApiKey}
-        [String]$sessionBody = @{'name'=$Name;'tags'=$Tag;'timeout'=$Timeout;'grace'=$Grace;'channels'=$Channel} | ConvertTo-Json
         [Uri]$hchkApiUri = 'https://healthchecks.io/api/v1/checks/'
     }
     Process
@@ -106,6 +102,7 @@ function New-HealthCheck
             {
                 try
                 {
+                    [String]$sessionBody = @{'name'=$check;'tags'=$Tag;'timeout'=$Timeout;'grace'=$Grace;'channels'=$Channel} | ConvertTo-Json
                     $hchkInfo = Invoke-RestMethod -Method Post -Uri $hchkApiUri -Headers $sessionHeaders -Body $sessionBody
                     $hchkReturnInfo = [PSCustomObject]@{
                         'Name' = $hchkInfo.name
@@ -121,10 +118,7 @@ function New-HealthCheck
                 }
                 catch
                 {
-                    $result = $Error[0].Exception.Response.GetResponseStream()
-                    $reader = New-Object System.IO.StreamReader($result)
-                    $responseBody = $reader.ReadToEnd()
-                    Write-Error -Message $responseBody
+                    Write-Error "Unable to create the check named "$check"."
                 }
             }
         }
