@@ -38,9 +38,12 @@ test_script:
     $res = Invoke-Pester -Script .\Tests\PS.HealthChecks.Tests.ps1 -OutputFormat NUnitXml -OutputFile $testResultsFile -PassThru;
     (New-Object 'System.Net.WebClient').UploadFile("https://ci.appveyor.com/api/testresults/nunit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path $testResultsFile))
 
-# Deploy the module to the PS Gallery
+# Deploy the module to the PS Gallery on tag
 deploy_script:
 - ps: >-
-    $ManifestPath = "$env:APPVEYOR_BUILD_FOLDER\PS.HealthChecks\PS.HealthChecks.psd1";
-    Update-ModuleManifest -ModuleVersion $env:APPVEYOR_BUILD_VERSION -Path $ManifestPath;
-    Publish-Module -Name 'PS.HealthChecks' -NuGetApiKey $env:secureNuget
+    if($env:APPVEYOR_REPO_TAG -eq $true) {
+      $ManifestPath = "$env:APPVEYOR_BUILD_FOLDER\PS.HealthChecks\PS.HealthChecks.psd1";
+      Update-ModuleManifest -ModuleVersion $env:APPVEYOR_BUILD_VERSION -Path $ManifestPath;
+      $Env:PSModulePath = $Env:PSModulePath + ";$Env:APPVEYOR_BUILD_FOLDER";
+      Publish-Module -Name 'PS.HealthChecks' -NuGetApiKey $env:secureNuget
+    }
