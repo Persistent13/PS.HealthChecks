@@ -5,36 +5,36 @@ function New-HealthCheck
     New-B2Bucket will create a new private or public bucket and requires a globally unique name.
 .DESCRIPTION
     New-B2Bucket will create a new private or public bucket and requires a globally unique name.
-    
+
     An API key is required to use this cmdlet.
 .EXAMPLE
     New-B2Bucket -BucketName stoic-barbarian-lemur -BucketType allPublic
-    
+
     BucketName            BucketID                 BucketType AccountID
     ----------            --------                 ---------- ---------
     stoic-barbarian-lemur 4a48fe8875c6214145260818 allPublic  010203040506
-    
+
     The cmdlet above will create a public bucket with the name of stoic-barbarian-lemur.
 .EXAMPLE
     PS C:\>New-B2Bucket -BucketName stoic-barbarian-lemur, frisky-navigator-lion -BucketType allPrivate
-    
+
     BucketName            BucketID                 BucketType AccountID
     ----------            --------                 ---------- ---------
     stoic-barbarian-lemur 4a48fe8875c6214145260818 allPrivate 010203040506
     frisky-navigator-lion 4a48fe8875c6214145260819 allPrivate 010203040506
-    
+
     The cmdlet above will create a public bucket with the name of stoic-barbarian-lemur and frisky-navigator-lion.
 .INPUTS
     System.String
-    
+
         This cmdlet takes the AccountID and ApplicationKey as strings.
 .OUTPUTS
     PS.B2.Bucket
-    
+
         The cmdlet will output a PS.B2.Bucket object holding the bucket info.
-    
+
     System.Uri
-    
+
         This cmdlet takes the ApiUri as a uri.
 .LINK
     https://www.backblaze.com/b2/docs/
@@ -53,11 +53,12 @@ function New-HealthCheck
         # The name of the new check.
         [Parameter(Mandatory=$false)]
         [ValidateNotNull()]
-        [ValidateLength(0,30)]
+        [ValidateLength(0,99)]
         [String[]]$Name = '',
         # Tag(s) for the check.
         [Parameter(Mandatory=$false)]
         [ValidateNotNull()]
+        [ValidateLength(0,499)]
         [String]$Tag = '',
         # Timeout period for the check, maximum 604800 seconds (1 week).
         [Parameter(Mandatory=$false)]
@@ -72,6 +73,7 @@ function New-HealthCheck
         # Alert channel to send notifications on.
         [Parameter(Mandatory=$false)]
         [ValidateNotNull()]
+        [ValidateLength(0,49)]
         [String]$Channel = '',
         # Used to bypass confirmation prompts.
         [Parameter(Mandatory=$false)]
@@ -84,7 +86,7 @@ function New-HealthCheck
         [ValidateNotNullOrEmpty()]
         [Uri]$ApiKey = $script:SavedHealthCheckApi
     )
-    
+
     Begin
     {
         if($ApiKey -eq $null)
