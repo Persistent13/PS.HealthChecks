@@ -48,7 +48,6 @@ deploy_script:
     $Manifest = Invoke-Expression -Command (Get-Content $ManifestPath -Raw);
     $Manifest.ModuleVersion = $env:APPVEYOR_BUILD_VERSION;
     Remove-Item -Path $ManifestPath -Force;
-    $NewManifest = New-ModuleManifest @Manifest -PassThru;
-    Set-Content -Path $ManifestPath -Value $NewManifest;
+    New-ModuleManifest @Manifest -Path $ManifestPath;
     $env:PSModulePath = $env:PSModulePath + ";$env:APPVEYOR_BUILD_FOLDER";
     Publish-Module -Name 'PS.HealthChecks' -NuGetApiKey $env:secureNuget
