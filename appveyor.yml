@@ -40,4 +40,4 @@ test_script:
 deploy_script:
 - ps: >-
     $Env:PSModulePath = $Env:PSModulePath + ";$Env:APPVEYOR_BUILD_FOLDER";
-    Publish-Module -Name 'PS.HealthChecks' -NuGetApiKey $Env:secure_nuget
+    Publish-Module -Name 'PS.HealthChecks' -NuGetApiKey $Env:secureNuget

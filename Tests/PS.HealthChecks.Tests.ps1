@@ -8,7 +8,7 @@ if($env:APPVEYOR_PROJECT_ID -eq $null) {
     $key = $settings.ApiKey
 } else {
     # Using appveyor key.
-    $key = $Env:secure_api
+    $key = $Env:secureApi
 }
 
 InModuleScope PS.HealthChecks {
