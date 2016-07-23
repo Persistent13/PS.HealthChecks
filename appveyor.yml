@@ -1,6 +1,6 @@
 ﻿# See http://www.appveyor.com/docs/appveyor-yml for many more options
 
-version: 0.0.{build}
+version: 0.1.{build}
 
 # Enable CI skipping for
 skip_tags: true
