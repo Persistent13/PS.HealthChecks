@@ -11,11 +11,14 @@ max_jobs: 1
 # Make sure we have the PSv5 image
 image: WMF 5
 
+# Allows us to skip CI build with "skip ci" anywhere in the commit message
+skip_commits:
+  message: /\[skip ci\]/
+
 # Install pester to the test system
 init:
   - ps: Install-PackageProvider -Name Nuget -RequiredVersion 2.8.5.201 -Force | Out-Null
   - ps: Install-Module -Name Pester -RequiredVersion 3.4.1 -Force
-  - ps: $foo = Get-ChildItem env:; $foo.Name
 
 # Set the healthcheck and nuget API key variables
 environment:
