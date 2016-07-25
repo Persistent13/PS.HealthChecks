@@ -2,47 +2,57 @@ function Get-HealthCheck
 {
 <#
 .SYNOPSIS
-    The Get-B2Bucket cmdlet will list buckets associated with the account.
+    The Get-HealthCheck cmdlet will list all checks associated with the account.
 .DESCRIPTION
-    The Get-B2Bucket cmdlet will list buckets associated with the account.
+    The Get-HealthCheck cmdlet will list all checks associated with the account.
     
     An API key is required to use this cmdlet.
 .EXAMPLE
-    Get-B2Bucket
+    Get-HealthCheck
     
-    BucketName       BucketID                 BucketType AccountID
-    ----------       --------                 ---------- ---------
-    awsome-jack-fang 4a48fe8875c6214145260818 allPrivate 30f20426f0b1
-    Kitten Videos    5b232e8875c6214145260818 allPublic  30f20426f0b1
+    Grace       : 900
+    LastPing    : Saturday, July 9, 2016 6:58:43 AM
+    PingCount   : 1
+    Name        : Api test 1
+    NextPing    : Saturday, July 9, 2016 7:58:43 AM
+    PingURL     : https://hchk.io/25c55e7c-8092-4d21-ad06-7dacfbb6fc10
+    Tags        : foo
+    Timeout     : 3600
+
+    Grace       : 60
+    LastPing    :
+    PingCount   : 0
+    Name        : Api test 2
+    NextPing    :
+    PingURL     : https://hchk.io/7e1b6e61-b16f-4671-bae3-e3233edd1b5e
+    Tags        : bar baz
+    Timeout     : 60
     
-    The cmdlet above will return all buckets for the account.
+    The cmdlet above will return all checks for the account.
 .EXAMPLE
-    Get-B2Bucket | Where-Object {$_.BucketName -eq 'awsome-jack-fang'}
+    PS C:\>Get-B2Bucket | Where-Object {$_.Name -eq 'Api test 2'}
     
-    BucketName       BucketID                 BucketType AccountID
-    ----------       --------                 ---------- ---------
-    awsome-jack-fang 4a48fe8875c6214145260818 allPrivate 30f20426f0b1
+    Grace       : 60
+    LastPing    :
+    PingCount   : 0
+    Name        : Api test 2
+    NextPing    :
+    PingURL     : https://hchk.io/7e1b6e61-b16f-4671-bae3-e3233edd1b5e
+    Tags        : bar baz
+    Timeout     : 60
     
-    The cmdlet above will return all buckets and search for the one with
-    a name of awsome-jack-fang.
+    The cmdlet above will return all buckets and search for the one with a name of "Api test 2".
 .INPUTS
     System.String
     
         This cmdlet takes the AccountID and ApplicationKey as strings.
-        
-    System.Uri
-    
-        This cmdlet takes the ApiUri as a Uri.
 .OUTPUTS
-    PS.B2.Bucket
-    
-        The cmdlet will output a PS.B2.Bucket object holding the bucket info.
 .LINK
-    https://www.backblaze.com/b2/docs/
+    https://healthchecks.io/docs/
 .ROLE
-    PS.B2
+    PS.HealthChecks
 .FUNCTIONALITY
-    PS.B2
+    PS.HealthChecks
 #>
     [CmdletBinding(SupportsShouldProcess=$false,
                    PositionalBinding)]

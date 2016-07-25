@@ -2,46 +2,95 @@ function New-HealthCheck
 {
 <#
 .SYNOPSIS
-    New-B2Bucket will create a new private or public bucket and requires a globally unique name.
+    New-HealthCheck will create a new health check.
 .DESCRIPTION
-    New-B2Bucket will create a new private or public bucket and requires a globally unique name.
+    New-HealthCheck will create a new health check.
 
     An API key is required to use this cmdlet.
 .EXAMPLE
-    New-B2Bucket -BucketName stoic-barbarian-lemur -BucketType allPublic
+    New-HealthCheck -Name stoic-barbarian-lemur -Tag "prod db-dump"
 
-    BucketName            BucketID                 BucketType AccountID
-    ----------            --------                 ---------- ---------
-    stoic-barbarian-lemur 4a48fe8875c6214145260818 allPublic  010203040506
+    Grace       : 3600
+    LastPing    :
+    PingCount   : 0
+    Name        : stoic-barbarian-lemur
+    NextPing    :
+    PingURL     : https://hchk.io/25c55e7c-8092-4d21-ad06-7dacfbb6fc10
+    Tags        : prod db-dump
+    Timeout     : 86400
 
-    The cmdlet above will create a public bucket with the name of stoic-barbarian-lemur.
+    The cmdlet above will create a new check with the name of stoic-barbarian-lemur and tags of "prod db-dump".
+
+    All other options are set to default and are not required to be specified.
 .EXAMPLE
-    PS C:\>New-B2Bucket -BucketName stoic-barbarian-lemur, frisky-navigator-lion -BucketType allPrivate
+    PS C:\>New-HealthCheck
 
-    BucketName            BucketID                 BucketType AccountID
-    ----------            --------                 ---------- ---------
-    stoic-barbarian-lemur 4a48fe8875c6214145260818 allPrivate 010203040506
-    frisky-navigator-lion 4a48fe8875c6214145260819 allPrivate 010203040506
+    Grace       : 3600
+    LastPing    :
+    PingCount   : 0
+    Name        :
+    NextPing    :
+    PingURL     : https://hchk.io/25c55e7c-8092-4d21-ad06-7dacfbb6fc10
+    Tags        :
+    Timeout     : 86400
 
-    The cmdlet above will create a public bucket with the name of stoic-barbarian-lemur and frisky-navigator-lion.
+    The cmdlet above will create a new check with all default properties.
+.EXAMPLE
+    PS C:\>New-HealthCheck -Grace 60 -Timeout 60
+
+    Grace       : 60
+    LastPing    :
+    PingCount   : 0
+    Name        :
+    NextPing    :
+    PingURL     : https://hchk.io/25c55e7c-8092-4d21-ad06-7dacfbb6fc10
+    Tags        :
+    Timeout     : 60
+
+    The cmdlet above will create a new check with grace and timeout set to the smallest value of 60 seconds.
+.EXAMPLE
+    PS C:\>New-HealthCheck -Grace 604800 -Timeout 604800
+
+    Grace       : 604800
+    LastPing    :
+    PingCount   : 0
+    Name        :
+    NextPing    :
+    PingURL     : https://hchk.io/25c55e7c-8092-4d21-ad06-7dacfbb6fc10
+    Tags        :
+    Timeout     : 604800
+
+    The cmdlet above will create a new check with grace and timeout set to the largest value of 604800 seconds (1 week).
+.EXAMPLE
+    PS C:\>New-HealthCheck -Channel "*"
+
+    Grace       : 3600
+    LastPing    :
+    PingCount   : 0
+    Name        :
+    NextPing    :
+    PingURL     : https://hchk.io/25c55e7c-8092-4d21-ad06-7dacfbb6fc10
+    Tags        :
+    Timeout     : 86400
+
+    The cmdlet above will create a new check set to alarm on all integration channels.
+
+    See more https://healthchecks.io/integrations/
 .INPUTS
     System.String
 
-        This cmdlet takes the AccountID and ApplicationKey as strings.
+        This cmdlet takes the check name, tags, channel, and API key as strings.
+
+    System.UInt32
+
+        This cmdlets takes the grace and timout periods as unsigned, 32 bit integers.
 .OUTPUTS
-    PS.B2.Bucket
-
-        The cmdlet will output a PS.B2.Bucket object holding the bucket info.
-
-    System.Uri
-
-        This cmdlet takes the ApiUri as a uri.
 .LINK
-    https://www.backblaze.com/b2/docs/
+    https://healthchecks.io/docs/
 .ROLE
-    PS.B2
+    PS.HealthChecks
 .FUNCTIONALITY
-    PS.B2
+    PS.HealthChecks
 #>
     [CmdletBinding(SupportsShouldProcess,
                    PositionalBinding,
@@ -50,12 +99,12 @@ function New-HealthCheck
     [OutputType()]
     Param
     (
-        # The name of the new check.
+        # The name of the new check, maximum of 99 characters.
         [Parameter(Mandatory=$false)]
         [ValidateNotNull()]
         [ValidateLength(0,99)]
         [String[]]$Name = '',
-        # Tag(s) for the check.
+        # Tag(s) for the check, maximum of 499 characters.
         [Parameter(Mandatory=$false)]
         [ValidateNotNull()]
         [ValidateLength(0,499)]
@@ -64,13 +113,15 @@ function New-HealthCheck
         [Parameter(Mandatory=$false)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
+        [ValidateRange(60,604800)]
         [UInt32]$Timeout = 86400,
         # Grace period for the check, maximum 604800 seconds (1 week).
         [Parameter(Mandatory=$false)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
+        [ValidateRange(60,604800)]
         [UInt32]$Grace = 3600,
-        # Alert channel to send notifications on.
+        # Alert channel to send notifications on, maximum of 49 characters.
         [Parameter(Mandatory=$false)]
         [ValidateNotNull()]
         [ValidateLength(0,49)]
@@ -84,7 +135,7 @@ function New-HealthCheck
         [Parameter(Mandatory=$false)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
-        [Uri]$ApiKey = $script:SavedHealthCheckApi
+        [String]$ApiKey = $script:SavedHealthCheckApi
     )
 
     Begin

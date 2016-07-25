@@ -2,52 +2,35 @@ function Connect-HealthCheck
 {
 <#
 .SYNOPSIS
-    The Connect-B2Cloud cmdlet sets the API key for the Backblaze B2 module cmdlets.
+    The Connect-HealthCheck cmdlet store the API key for the HealthCheck module cmdlets.
+
+    Connect-HealthCheck will only store the API key, no validation is done.
 .DESCRIPTION
-    The Connect-B2Cloud cmdlet is used to retireve the API Uri, download Uri, and API
-    token that authorizes actions againt a B2 account. The cmdlet returns the results
-    of the REST query as text if successful and an error if not successful.
+    The Connect-B2Cloud cmdlet is used to store the API key for the HealthCheck cmdlets.
     
-    The application key and account ID can be obtained from your Backblaze B2 account page.
+    The API key can be obtained from your HealthCheck account page.
 .EXAMPLE
-    Connect-B2Cloud
-   
-    AccountID       ApiUri                       DownloadUri                Token
-    ---------       ------                       -----------                -----
-    30f20426f0b1    https://api900.backblaze.com https://f900.backblaze.com YOUR_TOKEN
+    Connect-HealthCheck
 
-    The above cmdlet will prompt for the account ID and application key, authenticate, and
-    save the token, API Uri, and download Uri returned for use in the other PS.B2 modules.
-    
-    The API Uri, download Uri, and authorization token will be returned if the cmdlet was successful.
+    The above cmdlet will prompt for the API key and save the API key for use in the other HealthCheck modules.
 .EXAMPLE
-    PS C:\>Connect-B2Cloud -AccountID 30f20426f0b1 -ApplicationKey YOUR_APPLICATION_KEY
-   
-    AccountID       ApiUri                       DownloadUri                Token
-    ---------       ------                       -----------                -----
-    30f20426f0b1    https://api900.backblaze.com https://f900.backblaze.com YOUR_TOKEN
+    PS C:\>Connect-B2Cloud -ApiKey YOUR_API_KEY
 
-    The above cmdlet will take the given account ID and application key authenticate and
-    save the token, API Uri, and download Uri returned for use in the other PS.B2 modules.
-    
-    The API Uri, download Uri, and authorization token will be returned if the cmdlet was successful.
+    The above cmdlet will take the given API key and save the API key for use in the other HealthCheck modules.
 .INPUTS
     System.String
 
-        This cmdlet takes the AccountID and ApplicationKey as strings.
+        This cmdlet takes the API key as a string.
 .OUTPUTS
-    PS.B2.Account
-
-        The cmdlet will output a PS.B2.Account object holding account authorization info.
+    None
 .NOTES
-    Connect-B2Cloud will always output the account information on a successful connection, to
-    prevent this it is recommened to pipe the out put to Out-Null. i.e. Connect-B2Cloud | Out-Null
+    Connect-HealthCheck will only store the API key, no validation is done.
 .LINK
-    https://www.backblaze.com/b2/docs/
+    https://healthchecks.io/docs/
 .ROLE
-    PS.B2
+    PS.HealthChecks
 .FUNCTIONALITY
-    PS.B2
+    PS.HealthChecks
 #>
     [CmdletBinding(SupportsShouldProcess=$false,
                    PositionalBinding)]
