@@ -59,7 +59,7 @@ after_deploy:
         Tags = @('HealthCheck','Health','Check','Cron','monitoring','monitor','crontab','scheduled','task');
         LicenseUri = 'https://github.com/Persistent13/PS.HealthChecks/blob/dev/LICENSE.md';
         ProjectUri = 'https://github.com/Persistent13/PS.HealthChecks';
-    }
+    };
     $ManifestPath = "$env:APPVEYOR_BUILD_FOLDER\PS.HealthChecks\PS.HealthChecks.psd1";
     Update-ModuleManifest @ManifestParam;
     $Env:PSModulePath = $Env:PSModulePath + ";$Env:APPVEYOR_BUILD_FOLDER";
