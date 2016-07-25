@@ -1,4 +1,5 @@
-﻿$WorkspaceRoot = $(Get-Item $PSScriptRoot).Parent.FullName
+# Remove the module and then import the module
+$WorkspaceRoot = $(Get-Item $PSScriptRoot).Parent.FullName
 Remove-Module 'PS.HealthChecks' -ErrorAction Ignore
 Import-Module "$WorkspaceRoot\PS.HealthChecks\PS.HealthChecks.psd1" -Force
 
@@ -8,23 +9,36 @@ if($global:key -eq $null) {
     $global:key = $settings.ApiKey
 }
 
+Describe "PS.HealthChecks Module tests" {
+    Context "Test module import" {
+        It "Should export all commands" {
+            $module = Get-Module -Name PS.HealthChecks
+            # The count should always equal the number of cmdlets
+            $module.ExportedCommands.Count | Should Be 3
+        }
+    }
+}
 InModuleScope PS.HealthChecks {
-    Describe PS.HealthChecks {
+    Describe "PS.HealthChecks cmdlet tests" {
         Context "Get cmdlet returns an empty json array" {
             It "Should not throw" {
+                # The cmdlet will error out if [dateime] is applied to null ping date values
                 {Get-HealthCheck -ApiKey $global:key} | Should Not Throw
             }
         }
         Context "Test Connect cmdlet" {
             It "Should not throw" {
+                # As long as there is no error we should be good
                 {Connect-HealthCheck -ApiKey $global:key} | Should Not Throw
             }
         }
         Context "Test New cmdlets" {
             It "Creates Checks without API key" {
+                # No errors should generate for a new check
                 {New-HealthCheck -Name 'ci-test1' -Tag 'ci test' -Timeout 86400 -Grace 3600 -Channel ''} | Should Not Throw
             }
             It "Creates Checks with API key" {
+                # No errors should generate for a new check
                 {New-HealthCheck -Name 'ci-test2' -Tag 'ci test' -Timeout 86400 -Grace 3600 -Channel '' -ApiKey $global:key} | Should Not Throw
             }
         }
