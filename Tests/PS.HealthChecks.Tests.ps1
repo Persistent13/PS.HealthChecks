@@ -19,6 +19,13 @@ Describe "PS.HealthChecks Module tests" {
     }
 }
 InModuleScope PS.HealthChecks {
+    Describe "PS.HealthChecks class tests" {
+        Context "Custom classes should instantiate" {
+            It "Should create custome class object" {
+                {New-Object -TypeName Check} | Should Not Throw
+            }
+        }
+    }
     Describe "PS.HealthChecks cmdlet tests" {
         Context "Get cmdlet returns an empty json array" {
             It "Should not throw" {

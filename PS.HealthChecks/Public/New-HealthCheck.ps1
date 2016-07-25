@@ -157,16 +157,17 @@ function New-HealthCheck
                 {
                     [String]$sessionBody = @{'name'=$check;'tags'=$Tag;'timeout'=$Timeout;'grace'=$Grace;'channels'=$Channel} | ConvertTo-Json
                     $hchkInfo = Invoke-RestMethod -Method Post -Uri $hchkApiUri -Headers $sessionHeaders -Body $sessionBody
-                    $hchkReturnInfo = [PSCustomObject]@{
-                        'Name' = $hchkInfo.name
-                        'Tag' = $hchkInfo.tags
-                        'Timeout' = $hchkInfo.timeout
-                        'Grace' = $hchkInfo.grace
-                        'PingURL' = $hchkInfo.ping_url
-                        'PingCount' = $hchkInfo.n_pings
-                        'LastPing' = $hchkInfo.last_ping
-                        'NextPing' = $hchkInfo.next_ping
-                    }
+
+                    $hchkReturnInfo = New-Object -TypeName Check
+                    $hchkReturnInfo.Name = $hchkInfo.name
+                    $hchkReturnInfo.Tag = $hchkInfo.tags
+                    $hchkReturnInfo.Timeout = $hchkInfo.timeout
+                    $hchkReturnInfo.Grace = $hchkInfo.grace
+                    $hchkReturnInfo.PingURL = $hchkInfo.ping_url
+                    $hchkReturnInfo.PingCount = $hchkInfo.n_pings
+                    $hchkReturnInfo.LastPing = $hchkInfo.last_ping
+                    $hchkReturnInfo.NextPing = $hchkInfo.next_ping
+
                     Write-Output $hchkReturnInfo
                 }
                 catch
