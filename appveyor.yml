@@ -17,7 +17,7 @@ skip_commits:
 
 # Install pester to the test system
 init:
-  - ps: Install-PackageProvider -Name Nuget -RequiredVersion 2.8.5.201 -Force | Out-Null
+  - ps: Install-PackageProvider -Name Nuget -MinimumVersion 2.8.5.201 -Force | Out-Null
   - ps: Install-Module -Name Pester -RequiredVersion 3.4.1 -Force
 
 # Set the healthcheck and nuget API key variables
@@ -57,10 +57,9 @@ after_deploy:
         PowerShellVersion = '5.0';
         CmdletsToExport = @('Connect-HealthCheck','Get-HealthCheck','New-HealthCheck');
         Tags = @('HealthCheck','Health','Check','Cron','monitoring','monitor','crontab','scheduled','task');
-        LicenseUri = 'https://github.com/Persistent13/PS.HealthChecks/blob/dev/LICENSE.md';
+        LicenseUri = 'https://github.com/Persistent13/PS.HealthChecks/blob/master/LICENSE.md';
         ProjectUri = 'https://github.com/Persistent13/PS.HealthChecks';
     };
-    $ManifestPath = "$env:APPVEYOR_BUILD_FOLDER\PS.HealthChecks\PS.HealthChecks.psd1";
     Update-ModuleManifest @ManifestParam;
     $Env:PSModulePath = $Env:PSModulePath + ";$Env:APPVEYOR_BUILD_FOLDER";
-    Publish-Module -Name 'PS.HealthChecks' -NuGetApiKey $env:secureNuget
+    Publish-Module -Name "$env:APPVEYOR_BUILD_FOLDER\PS.HealthChecks\PS.HealthChecks.psd1" -NuGetApiKey $env:secureNuget
