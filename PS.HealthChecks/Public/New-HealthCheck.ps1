@@ -11,10 +11,10 @@ function New-HealthCheck
     New-HealthCheck -Name stoic-barbarian-lemur -Tag "prod db-dump"
 
     Grace       : 3600
-    LastPing    : Saturday, July 9, 2016 6:58:43 AM
+    LastPing    :
     PingCount   : 0
     Name        : stoic-barbarian-lemur
-    NextPing    : Saturday, July 9, 2016 7:58:43 AM
+    NextPing    :
     PingURL     : https://hchk.io/25c55e7c-8092-4d21-ad06-7dacfbb6fc10
     Tags        : prod db-dump
     Timeout     : 86400
@@ -26,10 +26,10 @@ function New-HealthCheck
     PS C:\>New-HealthCheck
 
     Grace       : 3600
-    LastPing    : Saturday, July 9, 2016 6:58:43 AM
+    LastPing    :
     PingCount   : 0
     Name        :
-    NextPing    : Saturday, July 9, 2016 7:58:43 AM
+    NextPing    :
     PingURL     : https://hchk.io/25c55e7c-8092-4d21-ad06-7dacfbb6fc10
     Tags        :
     Timeout     : 86400
@@ -39,10 +39,10 @@ function New-HealthCheck
     PS C:\>New-HealthCheck -Grace 60 -Timeout 60
 
     Grace       : 60
-    LastPing    : Saturday, July 9, 2016 6:58:43 AM
+    LastPing    :
     PingCount   : 0
     Name        :
-    NextPing    : Saturday, July 9, 2016 7:58:43 AM
+    NextPing    :
     PingURL     : https://hchk.io/25c55e7c-8092-4d21-ad06-7dacfbb6fc10
     Tags        :
     Timeout     : 60
@@ -52,10 +52,10 @@ function New-HealthCheck
     PS C:\>New-HealthCheck -Grace 604800 -Timeout 604800
 
     Grace       : 604800
-    LastPing    : Saturday, July 9, 2016 6:58:43 AM
+    LastPing    :
     PingCount   : 0
     Name        :
-    NextPing    : Saturday, July 9, 2016 7:58:43 AM
+    NextPing    :
     PingURL     : https://hchk.io/25c55e7c-8092-4d21-ad06-7dacfbb6fc10
     Tags        :
     Timeout     : 604800
@@ -65,10 +65,10 @@ function New-HealthCheck
     PS C:\>New-HealthCheck -Channel "*"
 
     Grace       : 3600
-    LastPing    : Saturday, July 9, 2016 6:58:43 AM
+    LastPing    :
     PingCount   : 0
     Name        :
-    NextPing    : Saturday, July 9, 2016 7:58:43 AM
+    NextPing    :
     PingURL     : https://hchk.io/25c55e7c-8092-4d21-ad06-7dacfbb6fc10
     Tags        :
     Timeout     : 86400
