@@ -88,8 +88,8 @@ function Get-HealthCheck
                 'Grace' = $info.grace
                 'PingURL' = $info.ping_url
                 'PingCount' = $info.n_pings
-                'LastPing' = $info.last_ping
-                'NextPing' = $info.next_ping
+                'LastPing' = if($info.last_ping){[datetime]$info.last_ping};
+                'NextPing' = if($info.last_ping){[datetime]$info.next_ping};
             }
             Write-Output $hchkReturnInfo
         }

@@ -10,8 +10,13 @@ if($global:key -eq $null) {
 
 InModuleScope PS.HealthChecks {
     Describe PS.HealthChecks {
+        Context "Get cmdlet returns an empty json array" {
+            It "Should not throw" {
+                {Get-HealthCheck -ApiKey $global:key} | Should Not Throw
+            }
+        }
         Context "Test Connect cmdlet" {
-            It "Does not error" {
+            It "Should not throw" {
                 {Connect-HealthCheck -ApiKey $global:key} | Should Not Throw
             }
         }
