@@ -62,4 +62,4 @@ after_deploy:
     };
     Update-ModuleManifest @ManifestParam;
     $Env:PSModulePath = $Env:PSModulePath + ";$Env:APPVEYOR_BUILD_FOLDER";
-    Publish-Module -Path "$env:APPVEYOR_BUILD_FOLDER\PS.HealthChecks\PS.HealthChecks.psd1" -NuGetApiKey $env:secureNuget
+    Publish-Module -Path "$env:APPVEYOR_BUILD_FOLDER\PS.HealthChecks" -NuGetApiKey $env:secureNuget
