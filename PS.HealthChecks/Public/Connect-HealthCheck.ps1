@@ -18,7 +18,9 @@ function Connect-HealthCheck
 
     The above cmdlet will take the given API key and save the API key for use in the other HealthCheck modules.
 .INPUTS
-    None
+    System.String
+
+        This cmdlet takes the API key as a string.
 .OUTPUTS
     None
 .NOTES
