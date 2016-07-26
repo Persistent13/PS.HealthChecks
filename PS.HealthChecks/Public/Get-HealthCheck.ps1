@@ -47,6 +47,9 @@ function Get-HealthCheck
 
         This cmdlet takes the AccountID and ApplicationKey as strings.
 .OUTPUTS
+    Check
+
+        This cmdlet returns a check object for each check found.
 .LINK
     https://healthchecks.io/docs/
 .ROLE
@@ -57,7 +60,7 @@ function Get-HealthCheck
     [CmdletBinding(SupportsShouldProcess=$false,
                    PositionalBinding)]
     [Alias()]
-    [OutputType()]
+    [OutputType([Check])]
     Param
     (
         # The Api key for your account.

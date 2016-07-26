@@ -85,6 +85,9 @@ function New-HealthCheck
 
         This cmdlets takes the grace and timout periods as unsigned, 32 bit integers.
 .OUTPUTS
+    Check
+
+        This cmdlet returns a check object for new check created.
 .LINK
     https://healthchecks.io/docs/
 .ROLE
@@ -96,7 +99,7 @@ function New-HealthCheck
                    PositionalBinding,
                    ConfirmImpact='Low')]
     [Alias()]
-    [OutputType()]
+    [OutputType([Check])]
     Param
     (
         # The name of the new check, maximum of 99 characters.
