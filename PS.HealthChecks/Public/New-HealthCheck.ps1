@@ -157,22 +157,20 @@ function New-HealthCheck
                 {
                     [String]$sessionBody = @{'name'=$check;'tags'=$Tag;'timeout'=$Timeout;'grace'=$Grace;'channels'=$Channel} | ConvertTo-Json
                     $hchkInfo = Invoke-RestMethod -Method Post -Uri $hchkApiUri -Headers $sessionHeaders -Body $sessionBody
-
-                    $hchkReturnInfo = New-Object -TypeName Check
-                    $hchkReturnInfo.Name = $hchkInfo.name
-                    $hchkReturnInfo.Tag = $hchkInfo.tags
-                    $hchkReturnInfo.Timeout = $hchkInfo.timeout
-                    $hchkReturnInfo.Grace = $hchkInfo.grace
-                    $hchkReturnInfo.PingURL = $hchkInfo.ping_url
-                    $hchkReturnInfo.PingCount = $hchkInfo.n_pings
-                    $hchkReturnInfo.LastPing = $hchkInfo.last_ping
-                    $hchkReturnInfo.NextPing = $hchkInfo.next_ping
-
+                    $hchkReturnInfo = [Check]::New($hchkInfo.name,
+                                                   $hchkInfo.tags,
+                                                   $hchkInfo.timeout,
+                                                   $hchkInfo.grace,
+                                                   $hchkInfo.ping_url,
+                                                   $hchkInfo.n_pings,
+                                                   $hchkInfo.last_ping,
+                                                   $hchkInfo.next_ping)
                     Write-Output $hchkReturnInfo
                 }
                 catch
                 {
-                    Write-Error "Unable to create the check named "$check"."
+                    $errorDetail = $_.Exception.Message
+                    Write-Error $errorDetail
                 }
             }
         }
