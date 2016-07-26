@@ -8,7 +8,7 @@ I can be used to create and list checks for your account.
 
 ## Requirements
 
-- PowerShell v5
+- PowerShell v5 or Windows 8 and later with WMF 5
 - HealthChecks.io API key
 
 ## Installation
