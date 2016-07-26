@@ -45,21 +45,22 @@ deploy:
     branch: master
 after_deploy:
 - ps: >-
+    if ($env:APPVEYOR_PULL_REQUEST_NUMBER -eq $null) {
     $ManifestParam = @{
-        Path = "$env:APPVEYOR_BUILD_FOLDER\PS.HealthChecks\PS.HealthChecks.psd1";
-        ModuleVersion = "$env:APPVEYOR_BUILD_VERSION";
-        RootModule = '.\PS.HealthChecks.psm1';
-        Guid = '3145d0f8-7117-4c5a-904c-3d496fe04ae0';
-        Author = 'Dakota Clark';
-        CompanyName = 'Unknown';
-        Copyright = '(c) 2016 Dakota Clark. All rights reserved.';
-        Description = 'A PowerShell module used to interact with the HealthCheck API.';
-        PowerShellVersion = '5.0';
-        CmdletsToExport = @('Connect-HealthCheck','Get-HealthCheck','New-HealthCheck');
-        Tags = @('HealthCheck','Health','Check','Cron','monitoring','monitor','crontab','scheduled','task');
-        LicenseUri = 'https://github.com/Persistent13/PS.HealthChecks/blob/master/LICENSE.md';
-        ProjectUri = 'https://github.com/Persistent13/PS.HealthChecks';
-    };
-    Update-ModuleManifest @ManifestParam;
-    $Env:PSModulePath = $Env:PSModulePath + ";$Env:APPVEYOR_BUILD_FOLDER";
-    Publish-Module -Path "$env:APPVEYOR_BUILD_FOLDER\PS.HealthChecks" -NuGetApiKey $env:secureNuget
+        Path = "$env:APPVEYOR_BUILD_FOLDER\PS.HealthChecks\PS.HealthChecks.psd1"
+        ModuleVersion = "$env:APPVEYOR_BUILD_VERSION"
+        RootModule = 'PS.HealthChecks.psm1'
+        Guid = '3145d0f8-7117-4c5a-904c-3d496fe04ae0'
+        Author = 'Dakota Clark'
+        CompanyName = ''
+        Copyright = '(c) 2016 Dakota Clark. All rights reserved.'
+        Description = 'A PowerShell module used to interact with the HealthCheck API.'
+        PowerShellVersion = '5.0'
+        CmdletsToExport = @('Connect-HealthCheck','Get-HealthCheck','New-HealthCheck')
+        Tags = @('HealthCheck','Health','Check','Cron','monitoring','monitor','crontab','scheduled','task')
+        LicenseUri = 'https://github.com/Persistent13/PS.HealthChecks/blob/master/LICENSE.md'
+        ProjectUri = 'https://github.com/Persistent13/PS.HealthChecks'
+    }
+    Update-ModuleManifest @ManifestParam
+    $Env:PSModulePath = $Env:PSModulePath + ";$Env:APPVEYOR_BUILD_FOLDER"
+    Publish-Module -Path "$env:APPVEYOR_BUILD_FOLDER\PS.HealthChecks" -NuGetApiKey $env:secureNuget}

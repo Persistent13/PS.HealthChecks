@@ -19,6 +19,13 @@ Describe "PS.HealthChecks Module tests" {
     }
 }
 InModuleScope PS.HealthChecks {
+    Describe "PS.HealthChecks class tests" {
+        Context "Custom classes should instantiate" {
+            It "Should create Check object" {
+                {[Check]::New('','',60,60,'https://hchk.io/25c55e7c-8092-4d21-ad06-7dacfbb6fc10',0,$null,$null)} | Should Not Throw
+            }
+        }
+    }
     Describe "PS.HealthChecks cmdlet tests" {
         Context "Get cmdlet returns an empty json array" {
             It "Should not throw" {

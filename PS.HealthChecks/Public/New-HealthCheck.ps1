@@ -85,6 +85,9 @@ function New-HealthCheck
 
         This cmdlets takes the grace and timout periods as unsigned, 32 bit integers.
 .OUTPUTS
+    Check
+
+        This cmdlet returns a check object for new check created.
 .LINK
     https://healthchecks.io/docs/
 .ROLE
@@ -96,7 +99,7 @@ function New-HealthCheck
                    PositionalBinding,
                    ConfirmImpact='Low')]
     [Alias()]
-    [OutputType()]
+    [OutputType([Check])]
     Param
     (
         # The name of the new check, maximum of 99 characters.
@@ -157,21 +160,20 @@ function New-HealthCheck
                 {
                     [String]$sessionBody = @{'name'=$check;'tags'=$Tag;'timeout'=$Timeout;'grace'=$Grace;'channels'=$Channel} | ConvertTo-Json
                     $hchkInfo = Invoke-RestMethod -Method Post -Uri $hchkApiUri -Headers $sessionHeaders -Body $sessionBody
-                    $hchkReturnInfo = [PSCustomObject]@{
-                        'Name' = $hchkInfo.name
-                        'Tag' = $hchkInfo.tags
-                        'Timeout' = $hchkInfo.timeout
-                        'Grace' = $hchkInfo.grace
-                        'PingURL' = $hchkInfo.ping_url
-                        'PingCount' = $hchkInfo.n_pings
-                        'LastPing' = $hchkInfo.last_ping
-                        'NextPing' = $hchkInfo.next_ping
-                    }
+                    $hchkReturnInfo = [Check]::New($hchkInfo.name,
+                                                   $hchkInfo.tags,
+                                                   $hchkInfo.timeout,
+                                                   $hchkInfo.grace,
+                                                   $hchkInfo.ping_url,
+                                                   $hchkInfo.n_pings,
+                                                   $hchkInfo.last_ping,
+                                                   $hchkInfo.next_ping)
                     Write-Output $hchkReturnInfo
                 }
                 catch
                 {
-                    Write-Error "Unable to create the check named "$check"."
+                    $errorDetail = $_.Exception.Message
+                    Write-Error $errorDetail
                 }
             }
         }
