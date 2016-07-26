@@ -43,6 +43,7 @@ deploy:
 - provider: Local
   on:
     branch: master
+    appveyor_repo_tag: true
 after_deploy:
 - ps: >-
     $ManifestParam = @{
