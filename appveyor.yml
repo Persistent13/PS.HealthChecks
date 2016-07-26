@@ -49,7 +49,7 @@ after_deploy:
     $ManifestParam = @{
         Path = "$env:APPVEYOR_BUILD_FOLDER\PS.HealthChecks\PS.HealthChecks.psd1";
         ModuleVersion = "$env:APPVEYOR_BUILD_VERSION";
-        RootModule = '.\PS.HealthChecks.psm1';
+        RootModule = 'PS.HealthChecks.psm1';
         Guid = '3145d0f8-7117-4c5a-904c-3d496fe04ae0';
         Author = 'Dakota Clark';
         CompanyName = 'Unknown';
