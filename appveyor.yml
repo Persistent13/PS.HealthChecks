@@ -1,4 +1,4 @@
-﻿version: 0.1.{build}
+version: 1.0.{build}
 
 # Ensure that PowerShell v5 is present
 os:
