@@ -1,7 +1,6 @@
-# Remove the module and then import the module
-$WorkspaceRoot = $(Get-Item $PSScriptRoot).Parent.FullName
+$ModuleDir = Resolve-Path -Path $PSScriptRoot\..\Release
+# Remove the module
 Remove-Module 'PS.HealthChecks' -ErrorAction Ignore
-Import-Module "$WorkspaceRoot\PS.HealthChecks\PS.HealthChecks.psd1" -Force
 
 if($env:APPVEYOR_HCHK_API_KEY -eq $null) {
     # Using json key.
@@ -10,11 +9,37 @@ if($env:APPVEYOR_HCHK_API_KEY -eq $null) {
     if($env:APPVEYOR_HCHK_API_KEY -eq $null){ throw 'Unable to set HCHK API key, is the json file present?' }
 }
 
+Describe "Project Validation" {
+
+    $files = Get-ChildItem $ModuleDir -Include *.ps1,*.psm1,*.psd1 -Recurse
+    $testCases = $files | ForEach-Object { @{file=$_} }
+
+    Context "The project is using valid PowerShell" {
+        It "Script <file> should be valid PowerShell" -TestCases $testCases {
+            param($file)
+
+            $file.FullName | Should Exist
+
+            $contents = Get-Content -Path $file.fullname -ErrorAction Stop
+            $errors = $null
+            $null = [System.Management.Automation.PSParser]::Tokenize($contents, [ref]$errors)
+            $errors.Count | Should Be 0
+        }
+
+        It "The module can import without errors" {
+            {Import-Module "$ModuleDir\PS.HealthChecks\PS.HealthChecks.psd1" -Force} | Should Not Throw
+        }
+    }
+}
+
+# Import the module for the following tests
+Import-Module "$ModuleDir\PS.HealthChecks\PS.HealthChecks.psd1" -Force
+
 Describe "PS.HealthChecks Module tests" {
     Context "Test module import" {
         It "Should export all commands" {
             $module = Get-Module -Name PS.HealthChecks
-            # The count should always equal the number of cmdlets
+            # The count should always equal the number of public cmdlets
             $module.ExportedCommands.Count | Should Be 3
         }
     }

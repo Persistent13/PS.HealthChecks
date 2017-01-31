@@ -44,12 +44,11 @@ Task Build -depends Clean, Init -requiredVariables $SrcDir, $ReleaseDir {
 }
 
 Task Test -depends Build -requiredVariables $TestDir {
-    if ($env:APPVEYOR) {
+    if($env:APPVEYOR) {
         Import-Module Pester
         $test = Invoke-Pester -Path $TestDir -OutputFormat NUnitXml -OutputFile $TestOutputFile -PassThru
-        [Uri]$uri = 'https://ci.appveyor.com/api/testresults/nunit/{0}' -f $env:APPVEYOR_JOB_ID
+        $uri = 'https://ci.appveyor.com/api/testresults/nunit/{0}' -f $env:APPVEYOR_JOB_ID
         (New-Object 'System.Net.WebClient').UploadFile($uri, $TestOutputFile)
-        #Invoke-WebRequest -Uri $uri -Method Post -InFile $TestOutputFile | Out-Null
 
         if($test.FailedCount -gt 0){ throw "There were $($test.FailedCount) failed tests during the build." }
     } else {
