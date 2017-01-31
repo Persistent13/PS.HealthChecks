@@ -7,6 +7,7 @@ if($env:APPVEYOR_HCHK_API_KEY -eq $null) {
     # Using json key.
     $settings = Get-Content $PSScriptRoot\testSettings.json | ConvertFrom-Json
     $env:APPVEYOR_HCHK_API_KEY = $settings.ApiKey
+    if($env:APPVEYOR_HCHK_API_KEY -eq $null){ throw 'Unable to set HCHK API key, is the json file present?' }
 }
 
 Describe "PS.HealthChecks Module tests" {
@@ -53,7 +54,8 @@ InModuleScope PS.HealthChecks {
             It "Lists Checks without API key" {
                 $hchk = Get-HealthCheck
                 $hchk.Count | Should BeGreaterThan 0
-                $ciTest = $hchk | Where-Object {$_.Name -eq 'ci-test1'}
+                $ciTest = ($hchk | Where-Object {$_.Name -eq 'ci-test1'})[-1]
+                $ciTest.Name | Should BeExactly 'ci-test1'
                 $ciTest.Tag | Should BeExactly 'ci test'
                 $ciTest.Timeout | Should Be 86400
                 $ciTest.Grace | Should Be 3600
@@ -65,7 +67,8 @@ InModuleScope PS.HealthChecks {
             It "Lists Checks with API key" {
                 $hchk = Get-HealthCheck -ApiKey $env:APPVEYOR_HCHK_API_KEY
                 $hchk.Count | Should BeGreaterThan 0
-                $ciTest = $hchk | Where-Object {$_.Name -eq 'ci-test2'}
+                $ciTest = ($hchk | Where-Object {$_.Name -eq 'ci-test2'})[-1]
+                $ciTest.Name | Should BeExactly 'ci-test2'
                 $ciTest.Tag | Should BeExactly 'ci test'
                 $ciTest.Timeout | Should Be 86400
                 $ciTest.Grace | Should Be 3600

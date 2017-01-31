@@ -47,10 +47,10 @@ Task Test -depends Build -requiredVariables $TestDir {
     if ($env:APPVEYOR) {
         Import-Module Pester
         $test = Invoke-Pester -Path $TestDir -OutputFormat NUnitXml -OutputFile $TestOutputFile -PassThru
-        if($test.FailedCount -gt 0){ throw "There were $($test.FailedCount) failed tests during the build." }
-
         [Uri]$uri = 'https://ci.appveyor.com/api/testresults/nunit/{0}' -f $env:APPVEYOR_JOB_ID
         Invoke-WebRequest -Uri $uri -Method Post -InFile $TestOutputFile | Out-Null
+
+        if($test.FailedCount -gt 0){ throw "There were $($test.FailedCount) failed tests during the build." }
         #(New-Object 'System.Net.WebClient').UploadFile($uri, $TestOutputFile)
     } else {
         $test = Invoke-Pester -Path $TestDir -PassThru
