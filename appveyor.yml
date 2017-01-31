@@ -1,66 +1,24 @@
-﻿# See http://www.appveyor.com/docs/appveyor-yml for many more options
-
 version: 1.0.{build}
 
-# Enable skipping tests for GitHub tags
-skip_tags: true
+# Ensure that PowerShell v5 is present
+os:
+  - "WMF 5"
 
-# Limit one CI job at a time
-max_jobs: 1
-
-# Make sure we have the PSv5 image
-image: WMF 5
-
-# Allows us to skip CI build with "skip ci" anywhere in the commit message
-skip_commits:
-  message: /\[skip ci\]/
-
-# Install pester to the test system
-init:
-  - ps: Install-PackageProvider -Name Nuget -MinimumVersion 2.8.5.201 -Force | Out-Null
-  - ps: Install-Module -Name Pester -RequiredVersion 3.4.1 -Force
-
-# Set the healthcheck and nuget API key variables
+# set the
 environment:
-  secureApi:
-    secure: M0ckUYrnDo8J+MD4vHJH48kmP3m2wYvHm5wlYD4thgsbCCvCfOlB26efwIXv1jJA
-  secureNuget:
+  APPVEYOR_PS_GALLERY_API_KEY:
     secure: UODT6L1HnLkZSbTCa3iiNl0k4Zld+WOVrq1nbcdX0q8X8BFAiLNdi1OcisvJ05xl
+  APPVEYOR_HCHK_API_KEY:
+    secure: M0ckUYrnDo8J+MD4vHJH48kmP3m2wYvHm5wlYD4thgsbCCvCfOlB26efwIXv1jJA
 
-# We don't use msbuild
-build: off
+install:
+  - ps: |
+      Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.204 -Force | Out-Null
+      Install-Module Pester -MinimumVersion 4.0.2 -Scope CurrentUser -Force | Out-Null
+      Install-Module psake -MinimumVersion 4.6.0 -Scope CurrentUser -Force | Out-Null
+      Install-Module PSScriptAnalyzer -Scope CurrentUser -Force | Out-Null
 
-# Run test and upload results
-test_script:
-- ps: >-
-    $global:key = $env:secureApi;
-    $testResultsFile = ".\TestsResults.xml";
-    $res = Invoke-Pester -Script .\Tests\PS.HealthChecks.Tests.ps1 -OutputFormat NUnitXml -OutputFile $testResultsFile -PassThru;
-    (New-Object 'System.Net.WebClient').UploadFile("https://ci.appveyor.com/api/testresults/nunit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path $testResultsFile))
+build_script:
+  - ps: . .\build.ps1
 
-# Deploy the module to the PS Gallery only for commits to the master branch
-deploy:
-- provider: Local
-  on:
-    branch: master
-after_deploy:
-- ps: >-
-    if ($env:APPVEYOR_PULL_REQUEST_NUMBER -eq $null) {
-    $ManifestParam = @{
-        Path = "$env:APPVEYOR_BUILD_FOLDER\PS.HealthChecks\PS.HealthChecks.psd1"
-        ModuleVersion = "$env:APPVEYOR_BUILD_VERSION"
-        RootModule = 'PS.HealthChecks.psm1'
-        Guid = '3145d0f8-7117-4c5a-904c-3d496fe04ae0'
-        Author = 'Dakota Clark'
-        CompanyName = 'Unknown'
-        Copyright = '(c) 2016 Dakota Clark. All rights reserved.'
-        Description = 'A PowerShell module used to interact with the HealthCheck API.'
-        PowerShellVersion = '5.0'
-        CmdletsToExport = @('Connect-HealthCheck','Get-HealthCheck','New-HealthCheck')
-        Tags = @('HealthCheck','Health','Check','Cron','monitoring','monitor','crontab','scheduled','task')
-        LicenseUri = 'https://github.com/Persistent13/PS.HealthChecks/blob/master/LICENSE.md'
-        ProjectUri = 'https://github.com/Persistent13/PS.HealthChecks'
-    };
-    Update-ModuleManifest @ManifestParam;
-    $Env:PSModulePath = $Env:PSModulePath + ";$Env:APPVEYOR_BUILD_FOLDER";
-    Publish-Module -Path "$env:APPVEYOR_BUILD_FOLDER\PS.HealthChecks" -NuGetApiKey $env:secureNuget}
+test: false
