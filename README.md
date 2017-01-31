@@ -1,6 +1,6 @@
 ﻿# PS.HealthChecks #
 
-[![Build status](https://ci.appveyor.com/api/projects/status/n4r8525jlvwdtd87/branch/master?svg=true)](https://ci.appveyor.com/project/Persistent13/ps-healthchecks/branch/master)
+[![Build status](https://ci.appveyor.com/api/projects/status/n4r8525jlvwdtd87/branch/master?retina=true)](https://ci.appveyor.com/project/Persistent13/ps-healthchecks/branch/master)
 
 PS.HealthChecks is a module for use with the [HealthChecks.io](https://healthchecks.io/) cron monitoring service.
 
