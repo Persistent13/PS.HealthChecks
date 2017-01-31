@@ -73,9 +73,14 @@ function Get-HealthCheck
 
     Begin
     {
-        if($ApiKey -eq $null)
-        {
-            throw 'The API key needs to be specified.'
+        if($ApiKey -eq $null){ throw 'The API key needs to be specified.' }
+        # By default PowerShell will not accept TLS 1.2 connections.
+        # This can be fixed by running the code below.
+        try {
+            [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+        }
+        catch {
+            throw 'Unable to set PowerShell to accept TLS 1.2 connections, unable to continue.'
         }
         [Hashtable]$sessionHeaders = @{'X-Api-Key'=$ApiKey}
         [Uri]$hchkApiUri = 'https://healthchecks.io/api/v1/checks/'

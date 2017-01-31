@@ -7,7 +7,7 @@ function Connect-HealthCheck
     Connect-HealthCheck will only store the API key, no validation is done.
 .DESCRIPTION
     The Connect-B2Cloud cmdlet is used to store the API key for the HealthCheck cmdlets.
-    
+
     The API key can be obtained from your HealthCheck account page.
 .EXAMPLE
     Connect-HealthCheck
@@ -45,9 +45,17 @@ function Connect-HealthCheck
         [Alias('Key')]
         [String]$ApiKey
     )
-    
+
     Begin
     {
+        # By default PowerShell will not accept TLS 1.2 connections.
+        # This can be fixed by running the code below.
+        try {
+            [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+        }
+        catch {
+            throw 'Unable to set PowerShell to accept TLS 1.2 connections, unable to continue.'
+        }
         [Hashtable]$sessionHeaders = @{'X-Api-Key'=$ApiKey}
         [Uri]$hchkApiUri = 'https://healthchecks.io/api/v1/checks/'
     }
