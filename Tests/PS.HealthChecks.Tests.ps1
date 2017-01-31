@@ -3,10 +3,10 @@ $WorkspaceRoot = $(Get-Item $PSScriptRoot).Parent.FullName
 Remove-Module 'PS.HealthChecks' -ErrorAction Ignore
 Import-Module "$WorkspaceRoot\PS.HealthChecks\PS.HealthChecks.psd1" -Force
 
-if($global:key -eq $null) {
+if($env:APPVEYOR_HCHK_API_KEY -eq $null) {
     # Using json key.
     $settings = Get-Content $PSScriptRoot\testSettings.json | ConvertFrom-Json
-    $global:key = $settings.ApiKey
+    $env:APPVEYOR_HCHK_API_KEY = $settings.ApiKey
 }
 
 Describe "PS.HealthChecks Module tests" {
@@ -30,13 +30,13 @@ InModuleScope PS.HealthChecks {
         Context "Get cmdlet returns an empty json array" {
             It "Should not throw" {
                 # The cmdlet will error out if [dateime] is applied to null ping date values
-                {Get-HealthCheck -ApiKey $global:key} | Should Not Throw
+                {Get-HealthCheck -ApiKey $env:APPVEYOR_HCHK_API_KEY} | Should Not Throw
             }
         }
         Context "Test Connect cmdlet" {
             It "Should not throw" {
                 # As long as there is no error we should be good
-                {Connect-HealthCheck -ApiKey $global:key} | Should Not Throw
+                {Connect-HealthCheck -ApiKey $env:APPVEYOR_HCHK_API_KEY} | Should Not Throw
             }
         }
         Context "Test New cmdlets" {
@@ -46,7 +46,7 @@ InModuleScope PS.HealthChecks {
             }
             It "Creates Checks with API key" {
                 # No errors should generate for a new check
-                {New-HealthCheck -Name 'ci-test2' -Tag 'ci test' -Timeout 86400 -Grace 3600 -Channel '' -ApiKey $global:key} | Should Not Throw
+                {New-HealthCheck -Name 'ci-test2' -Tag 'ci test' -Timeout 86400 -Grace 3600 -Channel '' -ApiKey $env:APPVEYOR_HCHK_API_KEY} | Should Not Throw
             }
         }
         Context "Test Get cmdlets" {
@@ -64,7 +64,7 @@ InModuleScope PS.HealthChecks {
                 $ciTest.NextPing | Should BeNullOrEmpty
             }
             It "Lists Checks with API key" {
-                $hchk = Get-HealthCheck -ApiKey $global:key
+                $hchk = Get-HealthCheck -ApiKey $env:APPVEYOR_HCHK_API_KEY
                 $hchk.Count | Should BeGreaterThan 0
                 $ciTest = $hchk | Where-Object {$_.Name -eq 'ci-test2'}
                 $ciTest.Name | Should BeExactly 'ci-test2'

@@ -1,3 +1,5 @@
 # The json file holds sensetive information and to keep
 # it from leaking we ignore any further edits to the file
 *.json
+# We don't want the Release folder contents
+Release/
