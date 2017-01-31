@@ -26,7 +26,7 @@ Properties {
         RootModule = 'PS.HealthChecks.psm1'
         Guid = '3145d0f8-7117-4c5a-904c-3d496fe04ae0'
         Author = 'Dakota Clark'
-        CompanyName = ''
+        CompanyName = 'Dakota Clark'
         Copyright = '(c) 2016 Dakota Clark. All rights reserved.'
         Description = 'A PowerShell module used to interact with the HealthCheck API.'
         PowerShellVersion = '5.0'
