@@ -54,7 +54,7 @@ InModuleScope PS.HealthChecks {
                 $hchk = Get-HealthCheck
                 $hchk.Count | Should BeGreaterThan 0
                 $ciTest = $hchk | Where-Object {$_.Name -eq 'ci-test1'}
-                $ciTest.Name | Should Contain 'ci-test1'
+                $ciTest.Name | Should Be 'ci-test1'
                 $ciTest.Tag | Should BeExactly 'ci test'
                 $ciTest.Timeout | Should Be 86400
                 $ciTest.Grace | Should Be 3600
@@ -67,7 +67,7 @@ InModuleScope PS.HealthChecks {
                 $hchk = Get-HealthCheck -ApiKey $env:APPVEYOR_HCHK_API_KEY
                 $hchk.Count | Should BeGreaterThan 0
                 $ciTest = $hchk | Where-Object {$_.Name -eq 'ci-test2'}
-                $ciTest.Name | Should Contain 'ci-test2'
+                $ciTest.Name | Should Be 'ci-test2'
                 $ciTest.Tag | Should BeExactly 'ci test'
                 $ciTest.Timeout | Should Be 86400
                 $ciTest.Grace | Should Be 3600
