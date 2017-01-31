@@ -1,3 +1,4 @@
+using module ..\Class\Check.Class.psm1
 function New-HealthCheck
 {
 <#
