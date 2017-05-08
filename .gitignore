@@ -3,3 +3,6 @@
 *.json
 # We don't want the Release folder contents
 Release/
+# No need to sync debug artifacts
+Healthchecks.Class/bin
+Healthchecks.Class/obj
