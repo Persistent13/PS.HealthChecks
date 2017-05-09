@@ -157,7 +157,14 @@ function New-HealthCheck
             }
             catch
             {
-                $PSCmdlet.ThrowTerminatingError($error)
+                $PSCmdlet.ThrowTerminatingError(
+                        [System.Management.Automation.ErrorRecord]::New(
+                        ([System.ArgumentException]'You must set the ApiKey parameter. Did you run Connect-HealthCheck?'),
+                        $null,
+                        [System.Management.Automation.ErrorCategory]::AuthenticationError,
+                        $PSItem
+                    )
+                )
             }
         }
         try
@@ -180,24 +187,17 @@ function New-HealthCheck
         {
             if($Force -or $PSCmdlet.ShouldProcess($check, "Create new check."))
             {
-                try
-                {
-                    [String]$sessionBody = @{'name'=$check;'tags'=$Tag;'timeout'=$Timeout;'grace'=$Grace;'channels'=$Channel} | ConvertTo-Json
-                    $hchkInfo = Invoke-RestMethod -Method Post -Uri $hchkApiUri -Headers $sessionHeaders -Body $sessionBody
-                    $hchkReturnInfo = [HealthChecks.Check]::New($hchkInfo.name,
-                                                                $hchkInfo.tags,
-                                                                $hchkInfo.timeout,
-                                                                $hchkInfo.grace,
-                                                                $hchkInfo.ping_url,
-                                                                $hchkInfo.n_pings,
-                                                                $hchkInfo.last_ping,
-                                                                $hchkInfo.next_ping)
-                    Write-Output $hchkReturnInfo
-                }
-                catch
-                {
-                    $PSCmdlet.ThrowTerminatingError($PSItem)
-                }
+                [String]$sessionBody = @{'name'=$check;'tags'=$Tag;'timeout'=$Timeout;'grace'=$Grace;'channels'=$Channel} | ConvertTo-Json
+                $hchkInfo = Invoke-RestMethod -Method Post -Uri $hchkApiUri -Headers $sessionHeaders -Body $sessionBody
+                $hchkReturnInfo = [HealthChecks.Check]::New($hchkInfo.name,
+                                                            $hchkInfo.tags,
+                                                            $hchkInfo.timeout,
+                                                            $hchkInfo.grace,
+                                                            $hchkInfo.ping_url,
+                                                            $hchkInfo.n_pings,
+                                                            $hchkInfo.last_ping,
+                                                            $hchkInfo.next_ping)
+                Write-Output $hchkReturnInfo
             }
         }
     }
