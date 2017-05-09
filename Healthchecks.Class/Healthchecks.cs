@@ -10,8 +10,8 @@ namespace Healthchecks
         public UInt32 Grace { get; set; }
         public Uri PingUrl { get; set; }
         public UInt32 PingCount { get; set; }
-        public Nullable<DateTime> LastPingDate { get; set; }
-        public Nullable<DateTime> NextPingDate { get; set; }
+        public DateTime? LastPingDate { get; set; }
+        public DateTime? NextPingDate { get; set; }
 
         public Check() { }
         public Check(

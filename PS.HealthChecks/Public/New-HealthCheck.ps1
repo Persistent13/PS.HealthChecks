@@ -86,7 +86,7 @@ function New-HealthCheck
 
         This cmdlets takes the grace and timout periods as unsigned, 32 bit integers.
 .OUTPUTS
-    Check
+    HealthChecks.Check
 
         This cmdlet returns a check object for new check created.
 .LINK
@@ -100,7 +100,7 @@ function New-HealthCheck
                    PositionalBinding,
                    ConfirmImpact='Low')]
     [Alias()]
-    [OutputType([Check])]
+    [OutputType([HealthChecks.Check])]
     Param
     (
         # The name of the new check, maximum of 99 characters.
@@ -144,14 +144,32 @@ function New-HealthCheck
 
     Begin
     {
-        if($ApiKey -eq $null){ throw 'The API key needs to be specified.' }
-        # By default PowerShell will not accept TLS 1.2 connections.
-        # This can be fixed by running the code below.
-        try {
+        $ErrorActionPreference = 'Stop'
+        if($ApiKey -eq $null)
+        {
+            try
+            {
+                $credParams = @{
+                    Message = 'Enter you API key below.'
+                    UserName = 'Enter you API key below.'
+                }
+                $ApiKey = (Get-Credential @credParams).GetNetworkCredential().Password
+            }
+            catch
+            {
+                $PSCmdlet.ThrowTerminatingError($error)
+            }
+        }
+        try
+        {
+            # By default PowerShell will not accept TLS 1.2 connections.
+            # This can be fixed by running the code below.
             [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
         }
-        catch {
-            throw 'Unable to set PowerShell to accept TLS 1.2 connections, unable to continue.'
+        catch
+        {
+            Write-Verbose -Message 'Unable to enable TLS 1.2 for PowerShell HTTP connections.'
+            $PSCmdlet.ThrowTerminatingError($PSItem)
         }
         [Hashtable]$sessionHeaders = @{'X-Api-Key'=$ApiKey}
         [Uri]$hchkApiUri = 'https://healthchecks.io/api/v1/checks/'
@@ -166,20 +184,19 @@ function New-HealthCheck
                 {
                     [String]$sessionBody = @{'name'=$check;'tags'=$Tag;'timeout'=$Timeout;'grace'=$Grace;'channels'=$Channel} | ConvertTo-Json
                     $hchkInfo = Invoke-RestMethod -Method Post -Uri $hchkApiUri -Headers $sessionHeaders -Body $sessionBody
-                    $hchkReturnInfo = [Check]::New($hchkInfo.name,
-                                                   $hchkInfo.tags,
-                                                   $hchkInfo.timeout,
-                                                   $hchkInfo.grace,
-                                                   $hchkInfo.ping_url,
-                                                   $hchkInfo.n_pings,
-                                                   $hchkInfo.last_ping,
-                                                   $hchkInfo.next_ping)
+                    $hchkReturnInfo = [HealthChecks.Check]::New($hchkInfo.name,
+                                                                $hchkInfo.tags,
+                                                                $hchkInfo.timeout,
+                                                                $hchkInfo.grace,
+                                                                $hchkInfo.ping_url,
+                                                                $hchkInfo.n_pings,
+                                                                $hchkInfo.last_ping,
+                                                                $hchkInfo.next_ping)
                     Write-Output $hchkReturnInfo
                 }
                 catch
                 {
-                    $errorDetail = $_.Exception.Message
-                    Write-Error $errorDetail
+                    $PSCmdlet.ThrowTerminatingError($PSItem)
                 }
             }
         }

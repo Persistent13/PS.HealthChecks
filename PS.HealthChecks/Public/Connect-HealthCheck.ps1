@@ -48,13 +48,16 @@ function Connect-HealthCheck
 
     Begin
     {
-        # By default PowerShell will not accept TLS 1.2 connections.
-        # This can be fixed by running the code below.
-        try {
+        $ErrorActionPreference = 'Stop'
+        try
+        {
+            # By default PowerShell will not accept TLS 1.2 connections.
+            # This can be fixed by running the code below.
             [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
         }
-        catch {
-            throw 'Unable to set PowerShell to accept TLS 1.2 connections, unable to continue.'
+        catch
+        {
+            $PSCmdlet.ThrowTerminatingError($PSItem)
         }
         [Hashtable]$sessionHeaders = @{'X-Api-Key'=$ApiKey}
         [Uri]$hchkApiUri = 'https://healthchecks.io/api/v1/checks/'
@@ -68,9 +71,7 @@ function Connect-HealthCheck
         }
         catch
         {
-            $errorDetail = $_.Exception.Message
-            Write-Error -Exception "Unable to authenticate with given APIKey.`n`r$errorDetail" `
-                -Message "Unable to authenticate with given APIKey.`n`r$errorDetail" -Category AuthenticationError
+            $PSCmdlet.ThrowTerminatingError($PSItem)
         }
     }
 }

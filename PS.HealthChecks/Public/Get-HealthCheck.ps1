@@ -1,4 +1,3 @@
-using module ..\Class\Check.Class.psm1
 function Get-HealthCheck
 {
 <#
@@ -44,7 +43,7 @@ function Get-HealthCheck
 
     The cmdlet above will return all buckets and search for the one with a name of "Api test 2".
 .INPUTS
-    System.String
+    System.Uri
 
         This cmdlet takes the AccountID and ApplicationKey as strings.
 .OUTPUTS
@@ -61,7 +60,7 @@ function Get-HealthCheck
     [CmdletBinding(SupportsShouldProcess=$false,
                    PositionalBinding)]
     [Alias()]
-    [OutputType([Check])]
+    [OutputType()]
     Param
     (
         # The Api key for your account.
@@ -73,32 +72,64 @@ function Get-HealthCheck
 
     Begin
     {
-        if($ApiKey -eq $null){ throw 'The API key needs to be specified.' }
-        # By default PowerShell will not accept TLS 1.2 connections.
-        # This can be fixed by running the code below.
-        try {
+        $ErrorActionPreference = 'Stop'
+        if($ApiKey -eq $null)
+        {
+            try
+            {
+                $credParams = @{
+                    Message = 'Enter you API key below.'
+                    UserName = 'Enter you API key below.'
+                }
+                $ApiKey = (Get-Credential @credParams).GetNetworkCredential().Password
+            }
+            catch
+            {
+                $PSCmdlet.ThrowTerminatingError(
+                    [System.Management.Automation.ErrorRecord]::New(
+                        ([System.ArgumentException]'You must set the ApiKey parameter. Did you run Connect-HealthCheck?'),
+                        $null,
+                        [System.Management.Automation.ErrorCategory]::AuthenticationError,
+                        $PSItem
+                    )
+                )
+            }
+        }
+        try
+        {
+            # By default PowerShell will not accept TLS 1.2 connections.
+            # This can be fixed by running the code below.
             [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
         }
-        catch {
-            throw 'Unable to set PowerShell to accept TLS 1.2 connections, unable to continue.'
+        catch
+        {
+            Write-Verbose -Message 'Unable to enable TLS 1.2 for PowerShell HTTP connections.'
+            $PSCmdlet.ThrowTerminatingError($PSItem)
         }
         [Hashtable]$sessionHeaders = @{'X-Api-Key'=$ApiKey}
         [Uri]$hchkApiUri = 'https://healthchecks.io/api/v1/checks/'
     }
     Process
     {
-        $hchkInfo = Invoke-RestMethod -Method Get -Uri $hchkApiUri -Headers $sessionHeaders
-        foreach($info in $hchkInfo.checks)
+        try
         {
-            $hchkReturnInfo = [Check]::New($info.name,
-                                           $info.tags,
-                                           $info.timeout,
-                                           $info.grace,
-                                           $info.ping_url,
-                                           $info.n_pings,
-                                           $info.last_ping,
-                                           $info.next_ping)
-            Write-Output $hchkReturnInfo
+            $hchkInfo = Invoke-RestMethod -Method Get -Uri $hchkApiUri -Headers $sessionHeaders
+            foreach($info in $hchkInfo.checks)
+            {
+                $hchkReturnInfo = [Healthchecks.Check]::New($info.name,
+                                                            $info.tags,
+                                                            $info.timeout,
+                                                            $info.grace,
+                                                            $info.ping_url,
+                                                            $info.n_pings,
+                                                            $info.last_ping,
+                                                            $info.next_ping)
+                Write-Output $hchkReturnInfo
+            }
+        }
+        catch
+        {
+            $PSCmdlet.ThrowTerminatingError($PSItem)
         }
     }
 }
