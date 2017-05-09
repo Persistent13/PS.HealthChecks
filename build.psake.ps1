@@ -20,6 +20,9 @@ Properties {
     [SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssigments','')]
     $ModuleDir = '{0}\{1}' -f $ReleaseDir, $ModuleName
 
+    [SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssigments','')]
+    $DotnetDir = '{0}\{1}' -f $PSScriptRoot, 'dotnet'
+
     $ManifestParam = @{
         Path = "$ModuleDir\PS.HealthChecks.psd1"
         ModuleVersion = "$env:APPVEYOR_BUILD_VERSION"
@@ -27,7 +30,7 @@ Properties {
         Guid = '3145d0f8-7117-4c5a-904c-3d496fe04ae0'
         Author = 'Dakota Clark'
         CompanyName = ''
-        Copyright = '(c) 2016 Dakota Clark. All rights reserved.'
+        Copyright = "(c) $([datetime]::Now.Year) Dakota Clark. All rights reserved."
         Description = 'A PowerShell module used to interact with the HealthCheck API.'
         PowerShellVersion = '5.0'
         CmdletsToExport = @('Connect-HealthCheck','Get-HealthCheck','New-HealthCheck')
@@ -39,8 +42,15 @@ Properties {
 
 Task default -depends Test
 
-Task Build -depends Clean, Init -requiredVariables $SrcDir, $ReleaseDir {
+Task Build -depends Clean, Init -requiredVariables $SrcDir, $ReleaseDir, $DotnetDir {
     Copy-Item -Recurse -Force -Path $SrcDir -Destination $ReleaseDir | Out-Null
+    Invoke-WebRequest -UseBasicParsing -Uri 'https://go.microsoft.com/fwlink/?linkid=843426' -OutFile $DotnetDir\dotnet.zip
+    Expand-Archive -Path $DotnetDir\dotnet.zip -DestinationPath $DotnetDir -Force
+    $env:DOTNET_INSTALL_DIR = "$PSScriptRoot\dotnet"
+    $env:Path = "$env:Path;$env:DOTNET_INSTALL_DIR"
+    exec { dotnet build $PSScriptRoot\HealthChecks.Class\HealthChecks.csproj -c Build -o $DotnetDir\Build }
+    $artifacts = Get-ChildItem -Path $DotnetDir\Build -Recurse -Filter '*.dll'
+    Copy-Item -Force -LiteralPath $artifacts.FullName -Destination $ReleaseDir\lib
 }
 
 Task Test -depends Build -requiredVariables $TestDir {
